@@ -34,8 +34,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                         var skills = lib.character[c][3]
                         var obj = {};
                         var addSkill = function (skill) {
-                            var info = get.translation(skill + '_info')
-                            if (skill in obj || !info) {
+                            var skillInfo = get.translation(skill + '_info')
+                            if (skill in obj || !skillInfo) {
                                 return;
                             }
                             // TODO: make skill prefix, card name, skill name changes
@@ -45,9 +45,19 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                                 '限定技，': '限定技',
                                 '觉醒技，': '觉醒技',
                             }
+                            for (var a of lib.inpile) {
+                                if (!lib.translate[a]) {
+                                    continue;
+                                }
+                                var [cardPack] = Object.entries(lib.cardPack).find(([n, cs]) => cs.contains(a)) || []
+                                repalceInfo[lib.translate[a]] = cardPack + '.' + a
+                            }
+                            for (var [a, b] in Object.entries(repalceInfo)) {
+                                skillInfo.replaceAll(a, '$(' + b + ')')
+                            }
                             var skillDef = {
                                 name: get.translation(skill),
-                                intro: get.translation(skill + '_info'),
+                                intro: skillInfo,
                             }
                         }
                         for (var skill of skills) {
